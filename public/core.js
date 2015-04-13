@@ -1,5 +1,11 @@
 var letterDisplayIndex = 1
-var maxLetterCount = 0
+var maxLetterCount = 0	
+
+		$(window).ready(function(e){
+      $.each($('div.progress-bar'),function(){
+        $(this).css('width', $(this).attr('aria-valuetransitiongoal')+'%');
+      });
+});
 
 app = angular.module('typeMonkeys', ['timer', 'ui.bootstrap'])
 
@@ -75,7 +81,7 @@ var monkey = app.controller('MonkeyController', ['$scope', function(sc) {
 		var text = ""
 
 		if (cur >= max * 0.7) {
-			type = "progress-bar progress-bar-success active"
+			type = "progress-bar progress-bar-success active six-sec-ease-in-out"
 		}
 		else if (cur >= max * 0.4) {
 			type = "progress-bar progress-bar-warning active"
@@ -94,7 +100,7 @@ var monkey = app.controller('MonkeyController', ['$scope', function(sc) {
 	var updateProgressBars = function() {
 		console.log('Updating progress bars')
 
-		var code = '<div class="ng-scope">\n'
+		var code = ""
 		var max = 0
 
 		for (var i = 0; i < alphabet.length; i++) {
@@ -142,7 +148,8 @@ var monkey = app.controller('MonkeyController', ['$scope', function(sc) {
 				code += '<div class="row">\n'
 	        	code += '	<div class="col-md-6">\n'
 				code += '		<div class="progress">\n'
-				code += '			<div class="' + data1[0] + '" aria-valuenow="' + data1[2] + '" aria-valuemin="0" aria-valuemax="' + max + '" style="width: ' + (data1[2] / max * 100) + '%">\n'
+				code += '			<div class="progress-bar six-sec-ease-in-out" aria-valuetransitiongoal="20">\n'
+				// code += '			<div class="' + data1[0] + '" aria-valuenow="' + data1[2] + '" aria-valuemin="0" aria-valuemax="' + max + '" style="width: ' + (data1[2] / max * 100) + '%">\n'
 	        	code += '				<span ><b>' + data1[1] + '</b></span>\n'
 	        	code += '			</div>\n'
 	      		code += '		</div>\n'
@@ -156,9 +163,32 @@ var monkey = app.controller('MonkeyController', ['$scope', function(sc) {
 	      		code += '	</div>'
 	      		code += '</div>'
 			}
-		}
 
-		code += '</div>'
+
+
+
+			// else {
+			// 	var data1 = getProgressBarData(i, max)
+			// 	var data2 = getProgressBarData(i + 1, max)
+
+			// 	code += '<div class="row">\n'
+	  //       	code += '	<div class="col-md-6">\n'
+			// 	code += '		<div class="progress">\n'
+			// 	code += '			<div class="' + data1[0] + '" aria-valuenow="' + data1[2] + '" aria-valuemin="0" aria-valuemax="' + max + '" style="width: ' + (data1[2] / max * 100) + '%">\n'
+	  //       	code += '				<span ><b>' + data1[1] + '</b></span>\n'
+	  //       	code += '			</div>\n'
+	  //     		code += '		</div>\n'
+	  //     		code += '	</div>'
+	  //       	code += '	<div class="col-md-6">\n'
+			// 	code += '		<div class="progress">\n'
+			// 	code += '			<div class="' + data2[0] + '" role="progressbar" aria-valuenow="' + data2[2] + '" aria-valuemin="0" aria-valuemax="' + max + '" style="width: ' + (data2[2] / max * 100) + '%">\n'
+	  //       	code += '				<span ><b>' + data2[1] + '</b></span>\n'
+	  //       	code += '			</div>\n'
+	  //     		code += '		</div>\n'
+	  //     		code += '	</div>'
+	  //     		code += '</div>'
+			// }
+		}
 
 		document.getElementById("progress").innerHTML = code
 	}
