@@ -49,36 +49,7 @@
 				</div>
 			</nav>
 
-<body ng-controller="MonkeyController">
-<div class="progress">
-        <div class="progress-bar six-sec-ease-in-out" aria-valuetransitiongoal="20"></div>
-    </div>
-    <div class="progress">
-        <div id="test" class="progress-bar progress-bar-info six-sec-ease-in-out" aria-valuetransitiongoal="40"></div>
-    </div>
-    <div class="progress">
-        <div class="progress-bar progress-bar-success six-sec-ease-in-out" aria-valuetransitiongoal="60"></div>
-    </div>
-    <div class="progress">
-        <div class="progress-bar progress-bar-warning six-sec-ease-in-out" aria-valuetransitiongoal="80"></div>
-    </div>
-    <div class="progress">
-        <div class="progress-bar progress-bar-danger six-sec-ease-in-out" aria-valuetransitiongoal="100"></div>
-    </div></body>
-
-    <script>
-			$(window).ready(function(e){
-      $.each($('div.progress-bar'),function(){
-        $(this).css('width', $(this).attr('aria-valuetransitiongoal')+'%');
-      });
-});</script></div>
-
 			<h3>Purchase Words</h3>
-
-			<div ng-controller="ProgressDemoCtrl">
-    			<h3><button class="btn btn-sm btn-primary" type="button" ng-click="random()">Randomize</button></h3>
-    			<progressbar max="max" value="dynamic"><span style="color:black; white-space:nowrap;">{{dynamic}} / {{max}}</span></progressbar>
-			</div>
 
  			Do it.
 
