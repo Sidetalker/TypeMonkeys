@@ -1,8 +1,14 @@
 app = angular.module('typeMonkeys', ['timer', 'ui.bootstrap'])
 
-app.controller('CollapseDemoCtrl', function ($scope) {
-  $scope.isCollapsed = false;
-});
+app.controller('CollapseController', ['$scope', function (sc) {
+	sc.isCollapsed = false
+	sc.collapseText = "Hide Letter Breakdown"
+
+	sc.toggle = function() {
+		sc.isCollapsed = !sc.isCollapsed
+		sc.collapseText = sc.isCollapsed ? "Show Letter Breakdown" : "Hide Letter Breakdown"
+	}
+}])
 
 app.controller('MonkeyController', ['$scope', function(sc) {
 	var alphabet = ['a','b','c','d','e','f','g','h','i','j','k','l','m',
@@ -17,8 +23,30 @@ app.controller('MonkeyController', ['$scope', function(sc) {
 
 	sc.timerRunning = true
 
+	var getProgressBarData = function(index, max) {
+		var cur = sc.letterQuantities[index]
+		var type = "progress-bar progress-bar-info active"
+		var text = ""
+
+		if (cur >= max * 0.7) {
+			type = "progress-bar progress-bar-success active"
+		}
+		else if (cur >= max * 0.4) {
+			type = "progress-bar progress-bar-warning active"
+		}
+		else {
+			type = "progress-bar progress-bar-danger active"
+		}
+
+		if (cur > 0) {
+			text = alphabet[index].toUpperCase()
+		}
+
+		return [type, text, sc.letterQuantities[index]]
+	}
+
 	var updateProgressBars = function() {
-		var code = ""
+		var code = '<div class="ng-scope">\n'
 		var max = 0
 
 		for (var i = 0; i < alphabet.length; i++) {
@@ -27,33 +55,60 @@ app.controller('MonkeyController', ['$scope', function(sc) {
 			}
 		}
 
-		console.log(max)
+		for (var i = 0; i < alphabet.length; i+=3) {
+			if (i + 2 < alphabet.length) {
+				var data1 = getProgressBarData(i, max)
+				var data2 = getProgressBarData(i + 1, max)
+				var data3 = getProgressBarData(i + 2, max)
 
-		for (var i = 0; i < alphabet.length; i++) {
-			var cur = sc.letterQuantities[i]
-			var type = "progress-bar progress-bar-info"
-			var text = ""
-
-			if (cur >= max * 0.7) {
-				type = "progress-bar progress-bar-success"
-			}
-			else if (cur >= max * 0.4) {
-				type = "progress-bar progress-bar-warning"
+				code += '<div class="row">\n'
+	        	code += '	<div class="col-md-4">\n'
+				code += '		<div class="progress">\n'
+				code += '			<div class="' + data1[0] + '" role="progressbar" aria-valuenow="' + data1[2] + '" aria-valuemin="0" aria-valuemax="' + max + '" style="width: ' + (data1[2] / max * 100) + '%">\n'
+	        	code += '				<span ><b>' + data1[1] + '</b></span>\n'
+	        	code += '			</div>\n'
+	      		code += '		</div>\n'
+	      		code += '	</div>'
+	        	code += '	<div class="col-md-4">\n'
+				code += '		<div class="progress">\n'
+				code += '			<div class="' + data2[0] + '" role="progressbar" aria-valuenow="' + data2[2] + '" aria-valuemin="0" aria-valuemax="' + max + '" style="width: ' + (data2[2] / max * 100) + '%">\n'
+	        	code += '				<span ><b>' + data2[1] + '</b></span>\n'
+	        	code += '			</div>\n'
+	      		code += '		</div>\n'
+	      		code += '	</div>'
+	        	code += '	<div class="col-md-4">\n'
+				code += '		<div class="progress">\n'
+				code += '			<div class="' + data3[0] + '" role="progressbar" aria-valuenow="' + data3[2] + '" aria-valuemin="0" aria-valuemax="' + max + '" style="width: ' + (data3[2] / max * 100) + '%">\n'
+	        	code += '				<span ><b>' + data3[1] + '</b></span>\n'
+	        	code += '			</div>\n'
+	      		code += '		</div>\n'
+	      		code += '	</div>'
+	      		code += '</div>'
 			}
 			else {
-				type = "progress-bar progress-bar-danger"
-			}
+				var data1 = getProgressBarData(i, max)
+				var data2 = getProgressBarData(i + 1, max)
 
-			if (cur > 0) {
-				text = alphabet[i] + '</b> (' + cur + ')'
+				code += '<div class="row">\n'
+	        	code += '	<div class="col-md-6">\n'
+				code += '		<div class="progress">\n'
+				code += '			<div class="' + data1[0] + '" aria-valuenow="' + data1[2] + '" aria-valuemin="0" aria-valuemax="' + max + '" style="width: ' + (data1[2] / max * 100) + '%">\n'
+	        	code += '				<span ><b>' + data1[1] + '</b></span>\n'
+	        	code += '			</div>\n'
+	      		code += '		</div>\n'
+	      		code += '	</div>'
+	        	code += '	<div class="col-md-6">\n'
+				code += '		<div class="progress">\n'
+				code += '			<div class="' + data2[0] + '" role="progressbar" aria-valuenow="' + data2[2] + '" aria-valuemin="0" aria-valuemax="' + max + '" style="width: ' + (data2[2] / max * 100) + '%">\n'
+	        	code += '				<span ><b>' + data2[1] + '</b></span>\n'
+	        	code += '			</div>\n'
+	      		code += '		</div>\n'
+	      		code += '	</div>'
+	      		code += '</div>'
 			}
-
-			code += '\t\t<div class="progress">\n'
-			code += '\t\t\t<div class="' + type + '" role="progressbar" aria-valuenow="' + cur + '" aria-valuemin="0" aria-valuemax="' + max + '" style="width: ' + (cur / max * 100) + '%">\n'
-        	code += '\t\t\t\t<span ><b>' + text + '</span>\n'
-        	code += '\t\t\t</div>'
-      		code += '\t\t</div>'
 		}
+
+		code += '</div>'
 
 		document.getElementById("progress").innerHTML = code
 	}
@@ -74,7 +129,6 @@ app.controller('MonkeyController', ['$scope', function(sc) {
 
 	sc.manualLetter = function(event) {
 		if (event.charCode >= 97 && event.charCode <= 122) {
-			console.log(alphabet[event.charCode - 97])
 			sc.letterQuantities[event.charCode - 97]++
 			sc.letterCount++
 
