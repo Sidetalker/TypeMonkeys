@@ -15,7 +15,6 @@ app.get('*', function(req, res) {
 	res.sendfile('./public/index.html'); 			// load the single view file (handled by angular)
 });
 
-// Test autodeploy
 app.listen(app.get('port'), function() {
   console.log("Node app is running at localhost:" + app.get('port'));
 });
