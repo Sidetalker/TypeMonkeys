@@ -1,4 +1,8 @@
-app = angular.module('typeMonkeys', ['timer'])
+app = angular.module('typeMonkeys', ['timer', 'ui.bootstrap'])
+
+app.controller('CollapseDemoCtrl', function ($scope) {
+  $scope.isCollapsed = false;
+});
 
 app.controller('MonkeyController', ['$scope', function(sc) {
 	var alphabet = ['a','b','c','d','e','f','g','h','i','j','k','l','m',
