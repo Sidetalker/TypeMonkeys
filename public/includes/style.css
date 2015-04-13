@@ -1,0 +1,28 @@
+html {
+	overflow-y:scroll; 
+}
+
+body { 
+	padding-top:50px; 
+}
+
+.progress { 
+	height: 1.5em;
+}
+
+.bar {
+	
+  -webkit-transition: width 3.0s ease !important;
+     -moz-transition: width 3.0s ease !important;
+       -o-transition: width 3.0s ease !important;
+          transition: width 3.0s ease !important;
+}
+
+.progress .six-sec-ease-in-out {
+    -webkit-transition: width 6s ease-in-out;
+    -moz-transition: width 6s ease-in-out;
+    -ms-transition: width 6s ease-in-out;
+    -o-transition: width 6s ease-in-out;
+    transition: width 6s ease-in-out;
+}
+
