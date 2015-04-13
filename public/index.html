@@ -49,11 +49,12 @@
 				</div>
 			</nav>
 
+<body ng-controller="MonkeyController">
 <div class="progress">
         <div class="progress-bar six-sec-ease-in-out" aria-valuetransitiongoal="20"></div>
     </div>
     <div class="progress">
-        <div class="progress-bar progress-bar-info six-sec-ease-in-out" aria-valuetransitiongoal="40"></div>
+        <div id="test" class="progress-bar progress-bar-info six-sec-ease-in-out" aria-valuetransitiongoal="40"></div>
     </div>
     <div class="progress">
         <div class="progress-bar progress-bar-success six-sec-ease-in-out" aria-valuetransitiongoal="60"></div>
@@ -63,7 +64,14 @@
     </div>
     <div class="progress">
         <div class="progress-bar progress-bar-danger six-sec-ease-in-out" aria-valuetransitiongoal="100"></div>
-    </div>
+    </div></body>
+
+    <script>
+			$(window).ready(function(e){
+      $.each($('div.progress-bar'),function(){
+        $(this).css('width', $(this).attr('aria-valuetransitiongoal')+'%');
+      });
+});</script></div>
 
 			<h3>Purchase Words</h3>
 
@@ -91,8 +99,6 @@
 				<div id="progress"></div>
 			</div>
 		</div>
-
-		
 	</div>
 </body>
 </html>

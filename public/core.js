@@ -190,7 +190,8 @@ var monkey = app.controller('MonkeyController', ['$scope', function(sc) {
 			// }
 		}
 
-		document.getElementById("progress").innerHTML = code
+		document.getElementById("test").style.width = "90%"
+		console.log(document.getElementById("test"))
 	}
 
 	updateProgressBars()
