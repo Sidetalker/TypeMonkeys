@@ -1,0 +1,7 @@
+{
+  "name": "TypeMonkeys",
+  "description": "TypeMonkeys Game",
+  "repository": "https://github.com/Sidetalker/TypeMonkeys",
+  "logo": "http://node-js-sample.herokuapp.com/node.svg",
+  "keywords": ["game", "idle"]
+}
