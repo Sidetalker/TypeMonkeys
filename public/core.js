@@ -1,4 +1,50 @@
+var letterDisplayIndex = 1
+var maxLetterCount = 0
+
 app = angular.module('typeMonkeys', ['timer', 'ui.bootstrap'])
+
+app.controller('ProgressDemoCtrl', function ($scope) {
+  $scope.max = 200;
+
+  $scope.update = function() {
+  	console.log('asdasf')
+  }
+
+  $scope.random = function() {
+    var value = Math.floor((Math.random() * 100) + 1);
+    var type;
+
+    if (value < 25) {
+      type = 'success';
+    } else if (value < 50) {
+      type = 'info';
+    } else if (value < 75) {
+      type = 'warning';
+    } else {
+      type = 'danger';
+    }
+
+    $scope.showWarning = (type === 'danger' || type === 'warning');
+
+    $scope.dynamic = value;
+    $scope.type = type;
+  };
+  $scope.random();
+
+  $scope.randomStacked = function() {
+    $scope.stacked = [];
+    var types = ['success', 'info', 'warning', 'danger'];
+
+    for (var i = 0, n = Math.floor((Math.random() * 4) + 1); i < n; i++) {
+        var index = Math.floor((Math.random() * 4));
+        $scope.stacked.push({
+          value: Math.floor((Math.random() * 30) + 1),
+          type: types[index]
+        });
+    }
+  };
+  $scope.randomStacked();
+});
 
 app.controller('CollapseController', ['$scope', function (sc) {
 	sc.isCollapsed = false
@@ -10,7 +56,7 @@ app.controller('CollapseController', ['$scope', function (sc) {
 	}
 }])
 
-app.controller('MonkeyController', ['$scope', function(sc) {
+var monkey = app.controller('MonkeyController', ['$scope', function(sc) {
 	var alphabet = ['a','b','c','d','e','f','g','h','i','j','k','l','m',
 					'n','o','p','q','r','s','t','u','v','w','x','y','z']
 
@@ -46,6 +92,8 @@ app.controller('MonkeyController', ['$scope', function(sc) {
 	}
 
 	var updateProgressBars = function() {
+		console.log('Updating progress bars')
+
 		var code = '<div class="ng-scope">\n'
 		var max = 0
 
@@ -54,6 +102,8 @@ app.controller('MonkeyController', ['$scope', function(sc) {
 				max = sc.letterQuantities[i]
 			}
 		}
+
+		maxLetterCount = max
 
 		for (var i = 0; i < alphabet.length; i+=3) {
 			if (i + 2 < alphabet.length) {
@@ -115,6 +165,10 @@ app.controller('MonkeyController', ['$scope', function(sc) {
 
 	updateProgressBars()
 
+	sc.$on('update', function(event, index) {
+		updateProgressBars()
+	});
+
 	sc.startTimer = function() {
 		console.log('Starting timer')
 		sc.$broadcast('timer-start')
@@ -129,6 +183,8 @@ app.controller('MonkeyController', ['$scope', function(sc) {
 
 	sc.manualLetter = function(event) {
 		if (event.charCode >= 97 && event.charCode <= 122) {
+			console.log(alphabet[event.charCode - 97])
+
 			sc.letterQuantities[event.charCode - 97]++
 			sc.letterCount++
 
@@ -139,4 +195,23 @@ app.controller('MonkeyController', ['$scope', function(sc) {
 	sc.$on('timer-stopped', function(event, data) {
 		console.log('Timer Stopped - data = ', data)
 	})
+}])
+
+app.controller('TextToggleController', ['$scope', function(sc) {
+	sc.singleModel = 1
+
+	sc.radioModel = 'Letter';
+
+	sc.checkModel = {
+		none: false,
+		letter: true,
+		count: false,
+		percent: false
+	}
+
+	sc.update = function(index) {
+		letterDisplayIndex = index
+
+		sc.$emit('update', index);
+	}
 }])

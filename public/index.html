@@ -48,14 +48,38 @@
 					<div class="navbar-collapse collapse">
 						<ul class="nav navbar-nav">
 							<li class="active"><a href="#">Letters: {{ letterCount }}</a></li>
-							<li class="active" style="padding-left:17px;"><button type="button" class="btn btn-default navbar-btn" " ng-click="toggle()">{{ collapseText }}</button></li>
+							<li class="active" style="padding-left:17px;"><button type="button" class="btn btn-default navbar-btn" ng-click="toggle()">{{ collapseText }}</button></li>
 						</ul>
 					</div>
 				</div>
 			</nav>
+
 			<h3>Purchase Words</h3>
+
+			<div ng-controller="ProgressDemoCtrl">
+
+
+    <h3>Dynamic <button class="btn btn-sm btn-primary" type="button" ng-click="random()">Randomize</button></h3>
+    <progressbar max="max" value="dynamic"><span style="color:black; white-space:nowrap;">{{dynamic}} / {{max}}</span></progressbar>
+    
+</div>
+
+ 			Do it.
+
 			<hr>
 			<div collapse="isCollapsed">
+				<center>
+				<div style="font-size: 16.5px;">Display Type</div><br>
+				<div ng-controller="TextToggleController">
+					<div class="btn-group">
+						<label class="btn btn-default" ng-model="radioModel" ng-click="update(0)" btn-radio="'None'">None</label>
+						<label class="btn btn-default" ng-model="radioModel" ng-click="update(1)" btn-radio="'Letter'">Letter</label>
+						<label class="btn btn-default" ng-model="radioModel" ng-click="update(2)" btn-radio="Count">Count</label>
+						<label class="btn btn-default" ng-model="radioModel" ng-click="update(3)" btn-radio="'Percent'">Percent</label>
+					</div>
+				</div>
+				</center><br>
+
 				<div id="progress"></div>
 			</div>
 		</div>
