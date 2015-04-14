@@ -278,6 +278,7 @@ var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', function(
 
 	// Set the programatically generated HTML 
 	achievementsElement = document.getElementById("achievementPlaceholder")
+	console.log(achievementsElement)
 	achievementsElement.innerHTML = code
 
 	// Update completions
