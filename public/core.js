@@ -278,13 +278,13 @@ var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', function(
 
 	// Set the programatically generated HTML 
 	achievementsElement = document.getElementById("achievementPlaceholder")
-	console.log(achievementsElement)
 	achievementsElement.innerHTML = code
 
 	// Update completions
 	for (var i = 0; i < achievements.length; i++) {
 		if (saveData.achievements[i]) {
 			var panel = document.getElementById("achievementPanel" + i)
+	console.log(panel)
 
 			if (panel) { panel.className = "panel panel-success" }
 		}
@@ -343,54 +343,3 @@ var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', function(
 		updateProgressBars()
 	});
 }])
-
-// Directive playground - shit aint bein used
-
-// Example HTML: <div id="unicTab" index="2" unic-tab-content></div>
-// app.directive("unicTabContent", function() {
-// 	var linkFunction = function(scope, element, attributes) {
-// 		console.log(attributes)
-// 	};
-
-//    return {
-//       restrict:"A",
-//       template:'Tesing!',
-//       link: linkFunction
-//    }
-// })
-
-// app.directive("achievementHeading", function($compile, $parse) {
-// 	var index = 0
-
-// 	var linkFunction = function(scope, element, attributes) {
-// 		console.log(scope)
-// 		scope.index = parseInt(attributes.index)
-// 		index = scope.index
-
-// 		scope.$watch(attributes.content, function() {
-// 			element.html($parse(attributes.content)(scope));
-// 			$compile(element.contents())(scope);
-//         }, true);
-// 	};
-
-//    return {
-//       restrict:"A",
-//       template:"{{ achievements[" + index + "][0]}}",
-//       link: linkFunction
-//    }
-// })
-
-// app.directive("achievementBody", function() {
-// 	var index = 0
-
-// 	var linkFunction = function($scope, element, attributes) {
-// 		scope.index = parseInt(attributes.index)
-// 		index = scope.index
-// 	};
-
-//    return {
-//       restrict:"A",
-//       template:"{{ achievements[" + index + "][1]}}",
-//       link: linkFunction
-//    }
-// })
