@@ -280,24 +280,13 @@ var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', function(
 	achievementsElement = document.getElementById("achievementPlaceholder")
 	achievementsElement.innerHTML = code
 
-	// $compile(achievementsElement)(sc);
-
-	// var html = angular.element(html)
-	// target = angular.element(target)
-
-	// // Now recompile all of the proper elements so binding takes place
-	// for (var i = 0; i < achievements.length; i++) {
-	// 	console.log(document.getElementById("achievementHeading" + i).ngBind)
-	// 	document.getElementById("achievementHeading" + i).ngBind = "achievements[" + i + "][0]"
-	// 	document.getElementById("achievementBody" + i).ngBind = "achievements[" + i + "][1]"
-	// }
-
-// 	html = angular.element(html);
-// target = angular.element(target);
-// target.append(html);
-// html = $compile(html)($scope)
-
-	
+	// Update completions
+	for (var i = 0; i < achievements.length; i++) {
+		if (saveData.achievements[i]) {
+			var panel = document.getElementById("achievementPanel" + i)
+			panel.className = "panel panel-success"
+		}
+	}
 
 	console.log(achievements[0][0])
 
@@ -305,10 +294,7 @@ var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', function(
 		return null
 	}
 
-	
 	updateAchievements()
-
-
 
 	sc.save = function() {
 		ipCookie("saveData", saveData)
