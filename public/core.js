@@ -284,8 +284,10 @@ var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', function(
 	for (var i = 0; i < achievements.length; i++) {
 		if (saveData.achievements[i]) {
 			var panel = document.getElementById("achievementPanel" + i)
-			panel.className = "panel panel-success"
+
+			if (panel) { panel.className = "panel panel-success" }
 		}
+
 	}
 
 	console.log(achievements[0][0])
