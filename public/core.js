@@ -17,8 +17,11 @@ $.ajax({
 	success: function(data) {
 		var split = data.split('\n')
 
-		for (var i = 0; i < split.length; i++) 
+		for (var i = 0; i < split.length; i++)  {
+			if (split[i].replace(/(\r\n|\n|\r)/gm,"") == "") { continue }
+
 			achievements.push(split[i].split('---'))
+		}
 
 		console.log("Achievements loaded");
 
@@ -58,7 +61,7 @@ app.controller('TextToggleController', ['$scope', 'ipCookie', function(sc, ipCoo
 	}
 }])
 
-var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', function(sc, ipCookie) {
+var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', function(sc, ipCookie, $compile) {
 	var alphabet = ['a','b','c','d','e','f','g','h','i','j','k','l','m',
 					'n','o','p','q','r','s','t','u','v','w','x','y','z']
 
@@ -121,7 +124,8 @@ var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', function(
 
 	// Assign scope variables to their corresponding cookie values
 	sc.letterCount = saveData.letterCount
-	sc.achievements = saveData.achievements
+	sc.achievements = achievements
+	sc.achievementCount = achievements.length
 
 	console.log('Generating alphabet progress bars')
 
@@ -192,7 +196,6 @@ var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', function(
 	}
 
 	// Create a progress bar for each letter of the alphabet
-	// TODO: 
 	for (var i = 0; i < alphabet.length; i++) {
 		if (i + 2 < alphabet.length) {
 			code += '<div class="row">\n'
@@ -245,6 +248,67 @@ var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', function(
 	// Set the programatically generated HTML and update the progress bars
 	document.getElementById("progress").innerHTML = code
 	updateProgressBars()
+	code = ""
+
+	// Generate the achievements HTML
+	for (var i = 0; i < achievements.length; i++) {
+
+		var remaining = achievements.length - i <= 4 ? achievements.length - i : 4
+
+		code += '<div class="row">'
+
+		for (var y = 0; y < remaining; y++) {
+			code += 	'<div class="col-md-3"> \
+							<div id="achievementPanel' + i + '" class="panel panel-danger"> \
+								<div class="panel-heading"> \
+									<div id="achievementHeading" index="' + i + '" class="panel-title">' + achievements[i][0] + '<span class="badge pull-right">10 pts</span></div> \
+								</div> \
+								<div class="panel-body"> \
+									<div id="achievementBody" index="' + i + '" class="panel-text">' + achievements[i][1] + '</div> \
+								</div> \
+							</div> \
+						</div>'
+			i++
+		}
+
+		code += '</div>'
+
+		i--
+	}
+
+	// Set the programatically generated HTML 
+	achievementsElement = document.getElementById("achievementPlaceholder")
+	achievementsElement.innerHTML = code
+
+	// $compile(achievementsElement)(sc);
+
+	// var html = angular.element(html)
+	// target = angular.element(target)
+
+	// // Now recompile all of the proper elements so binding takes place
+	// for (var i = 0; i < achievements.length; i++) {
+	// 	console.log(document.getElementById("achievementHeading" + i).ngBind)
+	// 	document.getElementById("achievementHeading" + i).ngBind = "achievements[" + i + "][0]"
+	// 	document.getElementById("achievementBody" + i).ngBind = "achievements[" + i + "][1]"
+	// }
+
+// 	html = angular.element(html);
+// target = angular.element(target);
+// target.append(html);
+// html = $compile(html)($scope)
+
+	
+
+	console.log(achievements[0][0])
+
+	var updateAchievements = function() {
+		return null
+	}
+
+	
+	updateAchievements()
+
+
 
 	sc.save = function() {
 		ipCookie("saveData", saveData)
@@ -290,3 +354,54 @@ var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', function(
 		updateProgressBars()
 	});
 }])
+
+// Directive playground - shit aint bein used
+
+// Example HTML: <div id="unicTab" index="2" unic-tab-content></div>
+// app.directive("unicTabContent", function() {
+// 	var linkFunction = function(scope, element, attributes) {
+// 		console.log(attributes)
+// 	};
+
+//    return {
+//       restrict:"A",
+//       template:'Tesing!',
+//       link: linkFunction
+//    }
+// })
+
+// app.directive("achievementHeading", function($compile, $parse) {
+// 	var index = 0
+
+// 	var linkFunction = function(scope, element, attributes) {
+// 		console.log(scope)
+// 		scope.index = parseInt(attributes.index)
+// 		index = scope.index
+
+// 		scope.$watch(attributes.content, function() {
+// 			element.html($parse(attributes.content)(scope));
+// 			$compile(element.contents())(scope);
+//         }, true);
+// 	};
+
+//    return {
+//       restrict:"A",
+//       template:"{{ achievements[" + index + "][0]}}",
+//       link: linkFunction
+//    }
+// })
+
+// app.directive("achievementBody", function() {
+// 	var index = 0
+
+// 	var linkFunction = function($scope, element, attributes) {
+// 		scope.index = parseInt(attributes.index)
+// 		index = scope.index
+// 	};
+
+//    return {
+//       restrict:"A",
+//       template:"{{ achievements[" + index + "][1]}}",
+//       link: linkFunction
+//    }
+// })
