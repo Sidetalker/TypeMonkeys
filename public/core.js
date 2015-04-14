@@ -115,7 +115,7 @@ var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', function(
 				myText = '<b>' + cur + '</b>'
 				break;
 			case 3:
-				myText = '<b>' + myValue + '</b>'
+				myText = '<b>' + (saveData.letterQuantities[index] / max * 100).toFixed(0) + "%" + '</b>'
 		}
 
 		if (saveData.letterQuantities[index] == 0) {
