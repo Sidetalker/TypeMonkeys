@@ -7,16 +7,6 @@ var saveData = {
 
 app = angular.module('typeMonkeys', ['timer', 'ui.bootstrap', 'ipCookie'])
 
-app.controller('CollapseController', ['$scope', function (sc) {
-	sc.isCollapsed = false
-	sc.collapseText = "Hide Letter Breakdown"
-
-	sc.toggle = function() {
-		sc.isCollapsed = !sc.isCollapsed
-		sc.collapseText = sc.isCollapsed ? "Show Letter Breakdown" : "Hide Letter Breakdown"
-	}
-}])
-
 app.controller('TextToggleController', ['$scope', 'ipCookie', function(sc, ipCookie) {
 	sc.radioModel = 'None';
 

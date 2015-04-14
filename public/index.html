@@ -21,6 +21,8 @@
 	<script src="includes/angular-cookie.min.js"></script>
 	<script src="includes/ui-bootstrap-tpls-0.12.1.min.js"></script>
 	<script src="includes/angular-timer.min.js"></script>
+	<script src="includes/bootstrap.min.js"></script>
+	<script src="includes/helpers.js"></script>
 
 	<script src="core.js"></script>
 </head>
@@ -28,36 +30,55 @@
 <body ng-controller="MonkeyController" ng-keypress="manualLetter($event)">
 	<div class="container">
 
-		<!-- HEADER -->
-		<div ng-controller="CollapseController">
-			<nav class="navbar navbar-default">
-				<div class="container">
-					<div class="navbar-header">
-						<a class="navbar-brand" href="#">TypeMonkeys</a>
-					</div>
-					<div class="navbar-collapse collapse">
-						<ul class="nav navbar-nav">
-							<li class="active"><a href="#">Letters: {{ letterCount }}</a></li>
-						</ul>
-						<ul class="nav navbar-nav navbar-right">
-							<li class="active" style="padding-right:28px;"><button type="button" class="btn btn-info navbar-btn" ng-click="save()"><span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span></button></li>
-						</ul>
-
-					</div>
+		<!-- Start Navigation Bar -->
+		<nav class="navbar navbar-default navbar-fixed-top">
+			<div class="container">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="http://typemonkeys.sideapps.com">TypeMonkeys</a>
+					<p class="navbar-text">v0.0.2</p>
 				</div>
-			</nav>
-			<center>
-			<div ng-controller="TextToggleController">
-				<div class="btn-group">
-					<label class="btn btn-default" ng-model="radioModel" ng-click="update(0)" btn-radio="'None'">None</label>
-					<label class="btn btn-default" ng-model="radioModel" ng-click="update(1)" btn-radio="'Letter'">Letter</label>
-					<label class="btn btn-default" ng-model="radioModel" ng-click="update(2)" btn-radio="'Count'">Count</label>
-					<label class="btn btn-default" ng-model="radioModel" ng-click="update(3)" btn-radio="'Both'">Both</label>
+				<div class="navbar-collapse collapse">
+					<ul class="nav navbar-nav navbar-right">
+						<li class="active" style="padding-right:28px;"><button type="button" class="btn btn-info navbar-btn" ng-click="save()"><span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span></button></li>
+					</ul>
 				</div>
 			</div>
-			</center><br>
+		</nav>
+		<!-- End Navigation Bar -->
 
-			<div id="progress"></div>
+		<!-- Start Page Tab Controller -->
+		<div id="content" style="padding-top:20px;">
+			<ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
+				<li class="active"><a href="#letters" data-toggle="tab">Letters: {{ letterCount }}</a></li>
+				<li><a href="#words" data-toggle="tab">Words: 0</a></li>
+				<li><a href="#monkeys" data-toggle="tab">Monkeys: 0</a></li>
+			</ul>
+			<div id="tab-content" class="tab-content">
+
+				<!-- Start Letters Tab -->
+				<div class="tab-pane active" id="letters">
+					<center>
+						<div class="btn-group" ng-controller="TextToggleController" style="padding-top:20px">
+							<label class="btn btn-default" ng-model="radioModel" ng-click="update(0)" btn-radio="'None'">None</label>
+							<label class="btn btn-default" ng-model="radioModel" ng-click="update(1)" btn-radio="'Letter'">Letter</label>
+							<label class="btn btn-default" ng-model="radioModel" ng-click="update(2)" btn-radio="'Count'">Count</label>
+							<label class="btn btn-default" ng-model="radioModel" ng-click="update(3)" btn-radio="'Both'">Both</label>
+						</div>
+					</center><br>
+
+					<div id="progress"></div>
+				</div>
+				<!-- End Letters Tab -->
+
+				<div class="tab-pane" id="words">
+					<h1>Werds</h1>
+					<p>Fresh werds, get yur werds!</p>
+				</div>
+				<div class="tab-pane" id="monkeys">
+					<h1>Monkeys</h1>
+					<p>Tails not included.</p>
+				</div>
+			</div>
 		</div>
 	</div>
 </body>
