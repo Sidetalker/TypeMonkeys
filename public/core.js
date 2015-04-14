@@ -34,7 +34,7 @@ app.controller('TextToggleController', ['$scope', 'ipCookie', function(sc, ipCoo
 				sc.radioModel = 'Count'
 				break;
 			case 3: 
-				sc.radioModel = 'Percent'
+				sc.radioModel = 'Both'
 				break;
 		}
 	}
@@ -115,7 +115,7 @@ var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', function(
 				myText = '<b>' + cur + '</b>'
 				break;
 			case 3:
-				myText = '<b>' + (saveData.letterQuantities[index] / max * 100).toFixed(0) + "%" + '</b>'
+				myText = '<b>' + alphabet[index].toUpperCase() + ' (' + cur + ')</b>'
 		}
 
 		if (saveData.letterQuantities[index] == 0) {
