@@ -3,7 +3,6 @@ var saveData = {
 	letterCount: 		0,
 	letterDisplayState: 1,
 	letterQuantities: 	[],
-	letterPercents: 	[],
 	achievements: 		[]
 }
 
@@ -16,24 +15,22 @@ $.ajax({
 	async: true,
 
 	success: function(data) {
-
 		var split = data.split('\n')
 
 		for (var i = 0; i < split.length; i++) 
 			achievements.push(split[i].split('---'))
 
-		console.log(achievements)
-
 		console.log("Achievements loaded");
+
+		console.log(achievements)
 	}
 });
 
 app = angular.module('typeMonkeys', ['timer', 'ui.bootstrap', 'ipCookie'])
 
+// Handles the segmented button controller for letter progress bar display
 app.controller('TextToggleController', ['$scope', 'ipCookie', function(sc, ipCookie) {
 	sc.radioModel = 'None';
-
-	console.log(ipCookie("saveData"))
 
 	if (ipCookie("saveData")) {
 		switch (ipCookie("saveData").letterDisplayState) {
@@ -52,12 +49,12 @@ app.controller('TextToggleController', ['$scope', 'ipCookie', function(sc, ipCoo
 		}
 	}
 
-	sc.update = function(index) {
+	sc.updateTextDisplay = function(index) {
 		console.log("Updating letter bar display state")
 
 		saveData.letterDisplayState = index
 
-		sc.$emit('update', index);
+		sc.$emit('updateTextDisplay', index);
 	}
 }])
 
@@ -65,31 +62,66 @@ var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', function(
 	var alphabet = ['a','b','c','d','e','f','g','h','i','j','k','l','m',
 					'n','o','p','q','r','s','t','u','v','w','x','y','z']
 
-	sc.timerRunning = true
-	sc.letterCount = 0
+	var cookie = ipCookie("saveData")
 
-	if (ipCookie("saveData")) {
+	// Load save data if found
+	if (cookie) {
 		console.log("Found save data!")
 
-		var cookie = ipCookie("saveData")
-		console.log(cookie)
-
 		saveData.letterCount = cookie.letterCount
-		sc.letterCount = cookie.letterCount
 		saveData.letterDisplayState = cookie.letterDisplayState
-		saveData.letterQuantities = cookie.letterQuantities
-		saveData.letterPercents = cookie.letterPercents
-		saveData.achievements = cookie.achievements
+		saveData.letterQuantities = cookie.letterQuantities.slice(0,26)
+
+		// Backward compatibility 
+
+		// Check for achievements variable
+		if (!cookie.achievements) {
+			saveData.achievements = []
+
+			for (var i = 0; i < achievements.length; i++) 
+				saveData.achievements.push(false)
+
+			ipCookie("saveData", saveData)
+
+		}
+		// Rectify achievement completion count in case new achievements have been added
+		if (saveData.achievements.length != achievements.length) {
+			saveData.achievements = []
+
+			for (var i = saveData.achievements.length; i < achievements.length; i++) {
+				saveData.achievements.push(false)
+			}
+
+			ipCookie("saveData", saveData)
+		}
+
+		ipCookie("saveData", saveData)
+
+		console.log(cookie)
 
 		console.log("Save data loaded!")
 	}
+	// Initialize empty save file if not found
 	else {
 		console.log("No save data found")
+
+		saveData.letterCount = 0
+		saveData.letterDisplayState = 0
+
+		for (var i = 0; i < alphabet.length; i++) 
+			saveData.letterQuantities.push(0)
+
+		for (var i = 0; i < achievements.length; i++) 
+			saveData.achievements.push(false)
+
+		ipCookie("saveData", saveData)
 	}
 
-	for (var i = 0; i < alphabet.length; i++) {
-		saveData.letterQuantities.push(0)
-	}
+	sc.timerRunning = true
+
+	// Assign scope variables to their corresponding cookie values
+	sc.letterCount = saveData.letterCount
+	sc.achievements = saveData.achievements
 
 	console.log('Generating alphabet progress bars')
 
@@ -141,6 +173,26 @@ var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', function(
 		return [myID, myClass, myText, myValue]
 	}
 
+	var updateProgressBars = function() {
+		var max = 0
+
+		for (var i = 0; i < alphabet.length; i++) {
+			if (saveData.letterQuantities[i] > max) {
+				max = saveData.letterQuantities[i]
+			}
+		}
+
+		for (var i = 0; i < alphabet.length; i++) {
+			var data = getProgressBarData(i, max)
+
+			document.getElementById("progressBar" + i).className = data[1]
+			document.getElementById("progressBar" + i).style.width = data[3]
+			document.getElementById("progressBarLabel" + i).innerHTML = data[2]
+		}
+	}
+
+	// Create a progress bar for each letter of the alphabet
+	// TODO: 
 	for (var i = 0; i < alphabet.length; i++) {
 		if (i + 2 < alphabet.length) {
 			code += '<div class="row">\n'
@@ -190,62 +242,27 @@ var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', function(
 		}
 	}
 
+	// Set the programatically generated HTML and update the progress bars
 	document.getElementById("progress").innerHTML = code
-
-	var updateProgressBars = function() {
-		console.log('Updating letter bars')
-
-		var max = 0
-
-		for (var i = 0; i < alphabet.length; i++) {
-			if (saveData.letterQuantities[i] > max) {
-				max = saveData.letterQuantities[i]
-			}
-		}
-
-		for (var i = 0; i < alphabet.length; i++) {
-			var data = getProgressBarData(i, max)
-
-			document.getElementById("progressBar" + i).className = data[1]
-			document.getElementById("progressBar" + i).style.width = data[3]
-			document.getElementById("progressBarLabel" + i).innerHTML = data[2]
-		}
-	}
-
 	updateProgressBars()
-
-	sc.loadFile = function() {
-		var iFrame = document.getElementById("achievementsFile");
-		var rawString = iFrame.contentWindow.document.body.childNodes[0].innerHTML;
-
-		while (rawString.indexOf("\r") >= 0)
-			strRawContents = strRawContents.replace("\r", "");
-
-		var lines = rawString.split("\n");
-		alert("File " + iFrame.src + " has " + arrLines.length + " lines");
-
-		for (var i = 0; i < lines.length; i++) {
-			var curLine = lines[i];
-			alert("Line #" + (i + 1) + " is: '" + curLine + "'");
-		}
-	}
 
 	sc.save = function() {
 		ipCookie("saveData", saveData)
-	}
 
-	sc.$on('updateTextDisplay', function(event, index) {
-		updateProgressBars()
-	});
+		console.log("Data saved")
+		console.log(ipCookie("saveData"))
+	}
 
 	sc.startTimer = function() {
 		console.log('Starting timer')
+
 		sc.$broadcast('timer-start')
 		sc.timerRunning = true
 	}
 
 	sc.stopTimer = function() {
 		console.log('Stopping timer')
+
 		sc.$broadcast('timer-stop')
 		sc.timerRunning = false
 	}
@@ -253,6 +270,8 @@ var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', function(
 	// Fired ever time the user presses a key 
 	sc.manualLetter = function(event) {
 		if (event.charCode >= 97 && event.charCode <= 122) {
+			console.log("Keypress handled")
+
 			saveData.letterQuantities[event.charCode - 97]++
 			saveData.letterCount++
 			sc.letterCount++
@@ -261,7 +280,13 @@ var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', function(
 		}
 	}
 
+	// Events
+
 	sc.$on('timer-stopped', function(event, data) {
-		console.log('Timer Stopped - data = ', data)
+		console.log('Timer stopped - data = ', data)
 	})
+
+	sc.$on('updateTextDisplay', function(event, index) {
+		updateProgressBars()
+	});
 }])
