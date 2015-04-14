@@ -1,26 +1,39 @@
+// Initialize save variable
 var saveData = {
 	letterCount: 		0,
 	letterDisplayState: 1,
 	letterQuantities: 	[],
-	letterPercents: 	[]
+	achievements: 		[]
 }
+
+var achievements = []
+
+// Load achievements from data file
+$.ajax({
+	url: 'includes/data/achievements.dat',
+	type: 'get',
+	async: true,
+
+	success: function(data) {
+		var split = data.split('\n')
+
+		for (var i = 0; i < split.length; i++)  {
+			if (split[i].replace(/(\r\n|\n|\r)/gm,"") == "") { continue }
+
+			achievements.push(split[i].split('---'))
+		}
+
+		console.log("Achievements loaded");
+
+		console.log(achievements)
+	}
+});
 
 app = angular.module('typeMonkeys', ['timer', 'ui.bootstrap', 'ipCookie'])
 
-app.controller('CollapseController', ['$scope', function (sc) {
-	sc.isCollapsed = false
-	sc.collapseText = "Hide Letter Breakdown"
-
-	sc.toggle = function() {
-		sc.isCollapsed = !sc.isCollapsed
-		sc.collapseText = sc.isCollapsed ? "Show Letter Breakdown" : "Hide Letter Breakdown"
-	}
-}])
-
+// Handles the segmented button controller for letter progress bar display
 app.controller('TextToggleController', ['$scope', 'ipCookie', function(sc, ipCookie) {
 	sc.radioModel = 'None';
-
-	console.log(ipCookie("saveData"))
 
 	if (ipCookie("saveData")) {
 		switch (ipCookie("saveData").letterDisplayState) {
@@ -34,48 +47,85 @@ app.controller('TextToggleController', ['$scope', 'ipCookie', function(sc, ipCoo
 				sc.radioModel = 'Count'
 				break;
 			case 3: 
-				sc.radioModel = 'Percent'
+				sc.radioModel = 'Both'
 				break;
 		}
 	}
 
-	sc.update = function(index) {
+	sc.updateTextDisplay = function(index) {
 		console.log("Updating letter bar display state")
 
 		saveData.letterDisplayState = index
 
-		sc.$emit('update', index);
+		sc.$emit('updateTextDisplay', index);
 	}
 }])
 
-var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', function(sc, ipCookie) {
+var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', function(sc, ipCookie, $compile) {
 	var alphabet = ['a','b','c','d','e','f','g','h','i','j','k','l','m',
 					'n','o','p','q','r','s','t','u','v','w','x','y','z']
 
-	sc.timerRunning = true
-	sc.letterCount = 0
+	var cookie = ipCookie("saveData")
 
-	if (ipCookie("saveData")) {
+	// Load save data if found
+	if (cookie) {
 		console.log("Found save data!")
 
-		var cookie = ipCookie("saveData")
-		console.log(cookie)
-
 		saveData.letterCount = cookie.letterCount
-		sc.letterCount = cookie.letterCount
 		saveData.letterDisplayState = cookie.letterDisplayState
-		saveData.letterQuantities = cookie.letterQuantities
-		saveData.letterPercents = cookie.letterPercents
+		saveData.letterQuantities = cookie.letterQuantities.slice(0,26)
+
+		// Backward compatibility 
+
+		// Check for achievements variable
+		if (!cookie.achievements) {
+			saveData.achievements = []
+
+			for (var i = 0; i < achievements.length; i++) 
+				saveData.achievements.push(false)
+
+			ipCookie("saveData", saveData)
+
+		}
+		// Rectify achievement completion count in case new achievements have been added
+		if (saveData.achievements.length != achievements.length) {
+			saveData.achievements = []
+
+			for (var i = saveData.achievements.length; i < achievements.length; i++) {
+				saveData.achievements.push(false)
+			}
+
+			ipCookie("saveData", saveData)
+		}
+
+		ipCookie("saveData", saveData)
+
+		console.log(cookie)
 
 		console.log("Save data loaded!")
 	}
+	// Initialize empty save file if not found
 	else {
 		console.log("No save data found")
+
+		saveData.letterCount = 0
+		saveData.letterDisplayState = 0
+
+		for (var i = 0; i < alphabet.length; i++) 
+			saveData.letterQuantities.push(0)
+
+		for (var i = 0; i < achievements.length; i++) 
+			saveData.achievements.push(false)
+
+		ipCookie("saveData", saveData)
 	}
 
-	for (var i = 0; i < alphabet.length; i++) {
-		saveData.letterQuantities.push(0)
-	}
+	sc.timerRunning = true
+
+	// Assign scope variables to their corresponding cookie values
+	sc.letterCount = saveData.letterCount
+	sc.achievements = achievements
+	sc.achievementCount = achievements.length
 
 	console.log('Generating alphabet progress bars')
 
@@ -115,7 +165,7 @@ var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', function(
 				myText = '<b>' + cur + '</b>'
 				break;
 			case 3:
-				myText = '<b>' + myValue + '</b>'
+				myText = '<b>' + alphabet[index].toUpperCase() + ' (' + cur + ')</b>'
 		}
 
 		if (saveData.letterQuantities[index] == 0) {
@@ -127,6 +177,25 @@ var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', function(
 		return [myID, myClass, myText, myValue]
 	}
 
+	var updateProgressBars = function() {
+		var max = 0
+
+		for (var i = 0; i < alphabet.length; i++) {
+			if (saveData.letterQuantities[i] > max) {
+				max = saveData.letterQuantities[i]
+			}
+		}
+
+		for (var i = 0; i < alphabet.length; i++) {
+			var data = getProgressBarData(i, max)
+
+			document.getElementById("progressBar" + i).className = data[1]
+			document.getElementById("progressBar" + i).style.width = data[3]
+			document.getElementById("progressBarLabel" + i).innerHTML = data[2]
+		}
+	}
+
+	// Create a progress bar for each letter of the alphabet
 	for (var i = 0; i < alphabet.length; i++) {
 		if (i + 2 < alphabet.length) {
 			code += '<div class="row">\n'
@@ -176,52 +245,83 @@ var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', function(
 		}
 	}
 
+	// Set the programatically generated HTML and update the progress bars
 	document.getElementById("progress").innerHTML = code
+	updateProgressBars()
+	code = ""
 
-	var updateProgressBars = function() {
-		console.log('Updating letter bars')
+	// Generate the achievements HTML
+	for (var i = 0; i < achievements.length; i++) {
 
-		var max = 0
+		var remaining = achievements.length - i <= 4 ? achievements.length - i : 4
 
-		for (var i = 0; i < alphabet.length; i++) {
-			if (saveData.letterQuantities[i] > max) {
-				max = saveData.letterQuantities[i]
-			}
+		code += '<div class="row">'
+
+		for (var y = 0; y < remaining; y++) {
+			code += 	'<div class="col-md-3"> \
+							<div id="achievementPanel' + i + '" class="panel panel-danger"> \
+								<div class="panel-heading"> \
+									<div id="achievementHeading" index="' + i + '" class="panel-title">' + achievements[i][0] + '<span class="badge pull-right">10 pts</span></div> \
+								</div> \
+								<div class="panel-body"> \
+									<div id="achievementBody" index="' + i + '" class="panel-text">' + achievements[i][1] + '</div> \
+								</div> \
+							</div> \
+						</div>'
+			i++
 		}
 
-		for (var i = 0; i < alphabet.length; i++) {
-			var data = getProgressBarData(i, max)
+		code += '</div>'
 
-			document.getElementById("progressBar" + i).className = data[1]
-			document.getElementById("progressBar" + i).style.width = data[3]
-			document.getElementById("progressBarLabel" + i).innerHTML = data[2]
+		i--
+	}
+
+	// Set the programatically generated HTML 
+	achievementsElement = document.getElementById("achievementPlaceholder")
+	achievementsElement.innerHTML = code
+
+	// Update completions
+	for (var i = 0; i < achievements.length; i++) {
+		if (saveData.achievements[i]) {
+			var panel = document.getElementById("achievementPanel" + i)
+			panel.className = "panel panel-success"
 		}
 	}
 
-	updateProgressBars()
+	console.log(achievements[0][0])
+
+	var updateAchievements = function() {
+		return null
+	}
+
+	updateAchievements()
 
 	sc.save = function() {
 		ipCookie("saveData", saveData)
-	}
 
-	sc.$on('update', function(event, index) {
-		updateProgressBars()
-	});
+		console.log("Data saved")
+		console.log(ipCookie("saveData"))
+	}
 
 	sc.startTimer = function() {
 		console.log('Starting timer')
+
 		sc.$broadcast('timer-start')
 		sc.timerRunning = true
 	}
 
 	sc.stopTimer = function() {
 		console.log('Stopping timer')
+
 		sc.$broadcast('timer-stop')
 		sc.timerRunning = false
 	}
 
+	// Fired ever time the user presses a key 
 	sc.manualLetter = function(event) {
 		if (event.charCode >= 97 && event.charCode <= 122) {
+			console.log("Keypress handled")
+
 			saveData.letterQuantities[event.charCode - 97]++
 			saveData.letterCount++
 			sc.letterCount++
@@ -230,7 +330,64 @@ var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', function(
 		}
 	}
 
+	// Events
+
 	sc.$on('timer-stopped', function(event, data) {
-		console.log('Timer Stopped - data = ', data)
+		console.log('Timer stopped - data = ', data)
 	})
+
+	sc.$on('updateTextDisplay', function(event, index) {
+		updateProgressBars()
+	});
 }])
+
+// Directive playground - shit aint bein used
+
+// Example HTML: <div id="unicTab" index="2" unic-tab-content></div>
+// app.directive("unicTabContent", function() {
+// 	var linkFunction = function(scope, element, attributes) {
+// 		console.log(attributes)
+// 	};
+
+//    return {
+//       restrict:"A",
+//       template:'Tesing!',
+//       link: linkFunction
+//    }
+// })
+
+// app.directive("achievementHeading", function($compile, $parse) {
+// 	var index = 0
+
+// 	var linkFunction = function(scope, element, attributes) {
+// 		console.log(scope)
+// 		scope.index = parseInt(attributes.index)
+// 		index = scope.index
+
+// 		scope.$watch(attributes.content, function() {
+// 			element.html($parse(attributes.content)(scope));
+// 			$compile(element.contents())(scope);
+//         }, true);
+// 	};
+
+//    return {
+//       restrict:"A",
+//       template:"{{ achievements[" + index + "][0]}}",
+//       link: linkFunction
+//    }
+// })
+
+// app.directive("achievementBody", function() {
+// 	var index = 0
+
+// 	var linkFunction = function($scope, element, attributes) {
+// 		scope.index = parseInt(attributes.index)
+// 		index = scope.index
+// 	};
+
+//    return {
+//       restrict:"A",
+//       template:"{{ achievements[" + index + "][1]}}",
+//       link: linkFunction
+//    }
+// })
