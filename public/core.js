@@ -1,9 +1,32 @@
+// Initialize save variable
 var saveData = {
 	letterCount: 		0,
 	letterDisplayState: 1,
 	letterQuantities: 	[],
-	letterPercents: 	[]
+	letterPercents: 	[],
+	achievements: 		[]
 }
+
+var achievements = []
+
+// Load achievements from data file
+$.ajax({
+	url: 'includes/data/achievements.dat',
+	type: 'get',
+	async: true,
+
+	success: function(data) {
+
+		var split = data.split('\n')
+
+		for (var i = 0; i < split.length; i++) 
+			achievements.push(split[i].split('---'))
+
+		console.log(achievements)
+
+		console.log("Achievements loaded");
+	}
+});
 
 app = angular.module('typeMonkeys', ['timer', 'ui.bootstrap', 'ipCookie'])
 
@@ -56,6 +79,7 @@ var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', function(
 		saveData.letterDisplayState = cookie.letterDisplayState
 		saveData.letterQuantities = cookie.letterQuantities
 		saveData.letterPercents = cookie.letterPercents
+		saveData.achievements = cookie.achievements
 
 		console.log("Save data loaded!")
 	}
@@ -190,11 +214,27 @@ var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', function(
 
 	updateProgressBars()
 
+	sc.loadFile = function() {
+		var iFrame = document.getElementById("achievementsFile");
+		var rawString = iFrame.contentWindow.document.body.childNodes[0].innerHTML;
+
+		while (rawString.indexOf("\r") >= 0)
+			strRawContents = strRawContents.replace("\r", "");
+
+		var lines = rawString.split("\n");
+		alert("File " + iFrame.src + " has " + arrLines.length + " lines");
+
+		for (var i = 0; i < lines.length; i++) {
+			var curLine = lines[i];
+			alert("Line #" + (i + 1) + " is: '" + curLine + "'");
+		}
+	}
+
 	sc.save = function() {
 		ipCookie("saveData", saveData)
 	}
 
-	sc.$on('update', function(event, index) {
+	sc.$on('updateTextDisplay', function(event, index) {
 		updateProgressBars()
 	});
 
@@ -210,6 +250,7 @@ var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', function(
 		sc.timerRunning = false
 	}
 
+	// Fired ever time the user presses a key 
 	sc.manualLetter = function(event) {
 		if (event.charCode >= 97 && event.charCode <= 122) {
 			saveData.letterQuantities[event.charCode - 97]++
