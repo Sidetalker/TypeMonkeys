@@ -9,9 +9,7 @@
 * Added changelog link
 * Dynamic loading of achievements from text
 
-# Changelog
 ## v0.0.3 / 04-14-15
 
 * Added changelog
 * Added support for dynamic achievement display
-  - Achievements cannot yet be earned

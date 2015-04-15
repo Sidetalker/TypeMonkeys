@@ -75,6 +75,44 @@ var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', 'loadAchi
 
 		console.log(achievements)
 
+		for (var i = 0; i < achievements.length; i++) {
+
+			var remaining = achievements.length - i <= 4 ? achievements.length - i : 4
+
+			code += '<div class="row">'
+
+			for (var y = 0; y < remaining; y++) {
+				code += 	'<div class="col-md-3"> \
+								<div id="achievementPanel' + i + '" class="panel panel-danger"> \
+									<div class="panel-heading"> \
+										<div id="achievementHeading" index="' + i + '" class="panel-title">' + achievements[i][0] + '<span class="badge pull-right">10 pts</span></div> \
+									</div> \
+									<div class="panel-body"> \
+										<div id="achievementBody" index="' + i + '" class="panel-text">' + achievements[i][1] + '</div> \
+									</div> \
+								</div> \
+							</div>'
+				i++
+			}
+
+			code += '</div>'
+
+			i--
+		}
+
+		// Set the programatically generated HTML 
+		achievementsElement = document.getElementById("achievementPlaceholder")
+		achievementsElement.innerHTML = code
+
+		// Update completions
+		for (var i = 0; i < achievements.length; i++) {
+			if (saveData.achievements[i]) {
+				var panel = document.getElementById("achievementPanel" + i)
+
+				if (panel) { panel.className = "panel panel-success" }
+			}
+		}
+
 		// Load save data if found
 		if (cookie) {
 			console.log("Found save data!")
@@ -82,8 +120,6 @@ var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', 'loadAchi
 			saveData.letterCount = cookie.letterCount
 			saveData.letterDisplayState = cookie.letterDisplayState
 			saveData.letterQuantities = cookie.letterQuantities.slice(0,26)
-
-			// Backward compatibility 
 
 			// Check for achievements variable
 			if (!cookie.achievements) {
@@ -259,47 +295,6 @@ var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', 'loadAchi
 	document.getElementById("progress").innerHTML = code
 	updateProgressBars()
 	code = ""
-
-	// Generate the achievements HTML
-	for (var i = 0; i < achievements.length; i++) {
-
-		var remaining = achievements.length - i <= 4 ? achievements.length - i : 4
-
-		code += '<div class="row">'
-
-		for (var y = 0; y < remaining; y++) {
-			code += 	'<div class="col-md-3"> \
-							<div id="achievementPanel' + i + '" class="panel panel-danger"> \
-								<div class="panel-heading"> \
-									<div id="achievementHeading" index="' + i + '" class="panel-title">' + achievements[i][0] + '<span class="badge pull-right">10 pts</span></div> \
-								</div> \
-								<div class="panel-body"> \
-									<div id="achievementBody" index="' + i + '" class="panel-text">' + achievements[i][1] + '</div> \
-								</div> \
-							</div> \
-						</div>'
-			i++
-		}
-
-		code += '</div>'
-
-		i--
-	}
-
-	// Set the programatically generated HTML 
-	achievementsElement = document.getElementById("achievementPlaceholder")
-	achievementsElement.innerHTML = code
-
-	// Update completions
-	for (var i = 0; i < achievements.length; i++) {
-		if (saveData.achievements[i]) {
-			var panel = document.getElementById("achievementPanel" + i)
-
-			if (panel) { panel.className = "panel panel-success" }
-		}
-	}
-
-	// console.log(achievements[0][0])
 
 	var updateAchievements = function() {
 		return null
