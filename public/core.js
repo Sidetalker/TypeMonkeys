@@ -8,26 +8,16 @@ var saveData = {
 
 var achievements = []
 
-// Load achievements from data file
-$.ajax({
-	url: 'includes/data/achievements.dat',
-	type: 'get',
-	async: true,
+// // Load achievements from data file
+// $.ajax({
+// 	url: 'includes/data/achievements.dat',
+// 	type: 'get',
+// 	async: true,
 
-	success: function(data) {
-		var split = data.split('\n')
+// 	success: function(data) {
 
-		for (var i = 0; i < split.length; i++)  {
-			if (split[i].replace(/(\r\n|\n|\r)/gm,"") == "") { continue }
-
-			achievements.push(split[i].split('---'))
-		}
-
-		console.log("Achievements loaded");
-
-		console.log(achievements)
-	}
-});
+// 	}
+// });
 
 app = angular.module('typeMonkeys', ['timer', 'ui.bootstrap', 'ipCookie'])
 
@@ -61,71 +51,91 @@ app.controller('TextToggleController', ['$scope', 'ipCookie', function(sc, ipCoo
 	}
 }])
 
-var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', function(sc, ipCookie, $compile) {
+app.factory('loadAchievements', function($http) { 
+    return $http.get('/includes/data/achievements.dat');
+});
+
+var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', 'loadAchievements', function(sc, ipCookie, loadAchievements) {
 	var alphabet = ['a','b','c','d','e','f','g','h','i','j','k','l','m',
 					'n','o','p','q','r','s','t','u','v','w','x','y','z']
 
 	var cookie = ipCookie("saveData")
 
-	// Load save data if found
-	if (cookie) {
-		console.log("Found save data!")
+	loadAchievements.success(function(data) {
+		// Load achievements from file
+		var split = data.split('\n')
 
-		saveData.letterCount = cookie.letterCount
-		saveData.letterDisplayState = cookie.letterDisplayState
-		saveData.letterQuantities = cookie.letterQuantities.slice(0,26)
+		for (var i = 0; i < split.length; i++)  {
+			if (split[i].replace(/(\r\n|\n|\r)/gm,"") == "") { continue }
 
-		// Backward compatibility 
+			achievements.push(split[i].split('---'))
+		}
 
-		// Check for achievements variable
-		if (!cookie.achievements) {
-			saveData.achievements = []
+		console.log("Achievements loaded");
+
+		console.log(achievements)
+
+		// Load save data if found
+		if (cookie) {
+			console.log("Found save data!")
+
+			saveData.letterCount = cookie.letterCount
+			saveData.letterDisplayState = cookie.letterDisplayState
+			saveData.letterQuantities = cookie.letterQuantities.slice(0,26)
+
+			// Backward compatibility 
+
+			// Check for achievements variable
+			if (!cookie.achievements) {
+				saveData.achievements = []
+
+				for (var i = 0; i < achievements.length; i++) 
+					saveData.achievements.push(false)
+
+				ipCookie("saveData", saveData)
+
+			}
+			// Rectify achievement completion count in case new achievements have been added
+			if (saveData.achievements.length != achievements.length) {
+				saveData.achievements = []
+
+				for (var i = saveData.achievements.length; i < achievements.length; i++) {
+					saveData.achievements.push(false)
+				}
+
+				ipCookie("saveData", saveData)
+			}
+
+			ipCookie("saveData", saveData)
+
+			console.log(cookie)
+
+			console.log("Save data loaded!")
+		}
+		// Initialize empty save file if not found
+		else {
+			console.log("No save data found")
+
+			saveData.letterCount = 0
+			saveData.letterDisplayState = 0
+
+			for (var i = 0; i < alphabet.length; i++) 
+				saveData.letterQuantities.push(0)
 
 			for (var i = 0; i < achievements.length; i++) 
 				saveData.achievements.push(false)
 
 			ipCookie("saveData", saveData)
-
-		}
-		// Rectify achievement completion count in case new achievements have been added
-		if (saveData.achievements.length != achievements.length) {
-			saveData.achievements = []
-
-			for (var i = saveData.achievements.length; i < achievements.length; i++) {
-				saveData.achievements.push(false)
-			}
-
-			ipCookie("saveData", saveData)
 		}
 
-		ipCookie("saveData", saveData)
-
-		console.log(cookie)
-
-		console.log("Save data loaded!")
-	}
-	// Initialize empty save file if not found
-	else {
-		console.log("No save data found")
-
-		saveData.letterCount = 0
-		saveData.letterDisplayState = 0
-
-		for (var i = 0; i < alphabet.length; i++) 
-			saveData.letterQuantities.push(0)
-
-		for (var i = 0; i < achievements.length; i++) 
-			saveData.achievements.push(false)
-
-		ipCookie("saveData", saveData)
-	}
+		sc.$emit('updateTextDisplay', 0);
+	});
 
 	sc.timerRunning = true
 
 	// Assign scope variables to their corresponding cookie values
 	sc.letterCount = saveData.letterCount
 	sc.achievements = achievements
-	sc.achievementCount = achievements.length
 
 	console.log('Generating alphabet progress bars')
 
@@ -287,10 +297,9 @@ var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', function(
 
 			if (panel) { panel.className = "panel panel-success" }
 		}
-
 	}
 
-	console.log(achievements[0][0])
+	// console.log(achievements[0][0])
 
 	var updateAchievements = function() {
 		return null
@@ -342,54 +351,3 @@ var monkey = app.controller('MonkeyController', ['$scope', 'ipCookie', function(
 		updateProgressBars()
 	});
 }])
-
-// Directive playground - shit aint bein used
-
-// Example HTML: <div id="unicTab" index="2" unic-tab-content></div>
-// app.directive("unicTabContent", function() {
-// 	var linkFunction = function(scope, element, attributes) {
-// 		console.log(attributes)
-// 	};
-
-//    return {
-//       restrict:"A",
-//       template:'Tesing!',
-//       link: linkFunction
-//    }
-// })
-
-// app.directive("achievementHeading", function($compile, $parse) {
-// 	var index = 0
-
-// 	var linkFunction = function(scope, element, attributes) {
-// 		console.log(scope)
-// 		scope.index = parseInt(attributes.index)
-// 		index = scope.index
-
-// 		scope.$watch(attributes.content, function() {
-// 			element.html($parse(attributes.content)(scope));
-// 			$compile(element.contents())(scope);
-//         }, true);
-// 	};
-
-//    return {
-//       restrict:"A",
-//       template:"{{ achievements[" + index + "][0]}}",
-//       link: linkFunction
-//    }
-// })
-
-// app.directive("achievementBody", function() {
-// 	var index = 0
-
-// 	var linkFunction = function($scope, element, attributes) {
-// 		scope.index = parseInt(attributes.index)
-// 		index = scope.index
-// 	};
-
-//    return {
-//       restrict:"A",
-//       template:"{{ achievements[" + index + "][1]}}",
-//       link: linkFunction
-//    }
-// })
