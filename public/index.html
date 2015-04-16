@@ -1,108 +1,115 @@
 <!-- index.html -->
 <doctype html>
 
-<!-- ASSIGN OUR ANGULAR MODULE -->
-<html ng-app="typeMonkeys">
-<head>
-	<!-- META -->
-	<meta charset="utf-8" >
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- ASSIGN OUR ANGULAR MODULE -->
+	<html ng-app="typeMonkeys">
+	<head>
+		<!-- META -->
+		<meta charset="utf-8" >
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<title>TypeMonkeys</title>
+		<title>TypeMonkeys</title>
 
-	<!-- STYLE -->
-	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-	<link rel="stylesheet" href="includes/css/style.css">
+		<!-- STYLE -->
+		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/3.1.3/css/jasny-bootstrap.min.css">
+		<link rel="stylesheet" href="includes/css/style.css">
 
-	<!-- SCRIPTS -->
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.7/angular.min.js"></script>
+		<!-- SCRIPTS -->
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.7/angular.min.js"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/3.1.3/js/jasny-bootstrap.min.js"></script>
 
-	<script src="includes/js/angular-cookie.min.js"></script>
-	<script src="includes/js/ui-bootstrap-tpls-0.12.1.min.js"></script>
-	<script src="includes/js/angular-timer.min.js"></script>
-	<script src="includes/js/bootstrap.min.js"></script>
-	<script src="includes/js/helpers.js"></script>
+		<script src="includes/js/angular-cookie.min.js"></script>
+		<script src="includes/js/ui-bootstrap-tpls-0.12.1.min.js"></script>
+		<script src="includes/js/angular-timer.min.js"></script>
+		<script src="includes/js/bootstrap.min.js"></script>
+		<script src="includes/js/helpers.js"></script>
 
-	<script src="core.js"></script>
-</head>
+		<script src="core.js"></script>
+	</head>
 
-<body ng-controller="MonkeyController" ng-keypress="manualLetter($event)">
-	<div class="container">
+	<body ng-controller="MonkeyController" ng-keypress="manualLetter($event)">
+		<div class="container">
 
-	<div id="unicTab" index="2" unic-tab-content></div>
+			<div id="unicTab" index="2" unic-tab-content></div>
 
-		<!-- Start Navigation Bar -->
-		<nav class="navbar navbar-default navbar-fixed-top">
-			<div class="container">
-				<div class="navbar-header">
-					<a class="navbar-brand" href="http://typemonkeys.sideapps.com">TypeMonkeys</a>
-					<p class="navbar-text">v0.0.6</p>
-					<p class="navbar-text" style="padding-left:100px">{{ letterLog() }}</p>
+			<!-- Start Navigation Bar -->
+			<nav class="navbar navbar-default navbar-fixed-top">
+				<div class="container">
+					<div class="navbar-header">
+						<a class="navbar-brand" href="http://typemonkeys.sideapps.com">TypeMonkeys</a>
+						<p class="navbar-text">v0.0.6</p>
+						<p class="navbar-text" style="padding-left:100px">{{ letterLog() }}</p>
+					</div>
+					<div class="navbar-collapse collapse">
+						<ul class="nav navbar-nav navbar-right">
+							<li class="active" style="padding-right:12px; padding-top:3px"><button type="button" class="btn btn-success navbar-btn" ng-click="save()"><span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span></button></li>
+							<li class="active" style="padding-right:28px; padding-top:3px"><button type="button" class="btn btn-info navbar-btn" onclick="window.location.href='includes/data/changelog.html'"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></button></li>
+						</ul>
+					</div>
 				</div>
-				<div class="navbar-collapse collapse">
-					<ul class="nav navbar-nav navbar-right">
-						<li class="active" style="padding-right:12px; padding-top:3px"><button type="button" class="btn btn-success navbar-btn" ng-click="save()"><span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span></button></li>
-						<li class="active" style="padding-right:28px; padding-top:3px"><button type="button" class="btn btn-info navbar-btn" onclick="window.location.href='includes/data/changelog.html'"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></button></li>
-					</ul>
-				</div>
+			</nav>
+			<!-- End Navigation Bar -->
+
+			<div class="alert alert-success alert-dismissable" id="achievement-alert">
+				<strong>{{ currentAchievement }}</strong> - {{ currentDescription }}
+				<span class="badge pull-right">{{ currentPoints }} pts</span>
 			</div>
-		</nav>
-		<!-- End Navigation Bar -->
 
-<div class="alert alert-success alert-dismissable" id="achievement-alert">
-    <strong>{{ currentAchievement }}</strong> - {{ currentDescription }}
-    <span class="badge pull-right">{{ currentPoints }} pts</span>
-</div>
+			<!-- Start Page Tab Controller -->
+			<div id="content" style="padding-top:20px;">
+				<ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
+					<li class="active"><a href="#letters" data-toggle="tab">Letters: {{ letterCount }}</a></li>
+					<li><a href="#words" data-toggle="tab">Words: 0</a></li>
+					<li><a href="#monkeys" data-toggle="tab">Monkeys: 0</a></li>
+					<li><a href="#achievements" data-toggle="tab">Ape Points: {{ pointCount() }}</a></li>
+				</ul>
+				<div id="tab-content" class="tab-content">
+					<!-- Achievements: 0 / {{ achievements.length }} -->
+					<!-- Start Letters Tab -->
+					<div class="tab-pane active" id="letters">
+						<center>
+							<div class="btn-group" ng-controller="TextToggleController" style="padding-top:20px;">
+								<label class="btn btn-default" ng-model="radioModel" ng-click="updateTextDisplay(0)" btn-radio="'None'">None</label>
+								<label class="btn btn-default" ng-model="radioModel" ng-click="updateTextDisplay(1)" btn-radio="'Letter'">Letter</label>
+								<label class="btn btn-default" ng-model="radioModel" ng-click="updateTextDisplay(2)" btn-radio="'Count'">Count</label>
+								<label class="btn btn-default" ng-model="radioModel" ng-click="updateTextDisplay(3)" btn-radio="'Both'">Both</label>
+							</div>
+						</center><br>
 
-		<!-- Start Page Tab Controller -->
-		<div id="content" style="padding-top:20px;">
-			<ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
-				<li class="active"><a href="#letters" data-toggle="tab">Letters: {{ letterCount }}</a></li>
-				<li><a href="#words" data-toggle="tab">Words: 0</a></li>
-				<li><a href="#monkeys" data-toggle="tab">Monkeys: 0</a></li>
-				<li><a href="#achievements" data-toggle="tab">Ape Points: {{ pointCount() }}</a></li>
-			</ul>
-			<div id="tab-content" class="tab-content">
-<!-- Achievements: 0 / {{ achievements.length }} -->
-				<!-- Start Letters Tab -->
-				<div class="tab-pane active" id="letters">
-					<center>
-						<div class="btn-group" ng-controller="TextToggleController" style="padding-top:20px;">
-							<label class="btn btn-default" ng-model="radioModel" ng-click="updateTextDisplay(0)" btn-radio="'None'">None</label>
-							<label class="btn btn-default" ng-model="radioModel" ng-click="updateTextDisplay(1)" btn-radio="'Letter'">Letter</label>
-							<label class="btn btn-default" ng-model="radioModel" ng-click="updateTextDisplay(2)" btn-radio="'Count'">Count</label>
-							<label class="btn btn-default" ng-model="radioModel" ng-click="updateTextDisplay(3)" btn-radio="'Both'">Both</label>
-						</div>
-					</center><br>
+						<div id="progress"></div>
 
-					<div id="progress"></div>
+					</div>
+					<!-- End Letters Tab -->
+
+					<!-- Start Words Tab -->
+					<div class="tab-pane" id="words">
+						<h1>Werds</h1>
+						<p>Fresh werds, get yur werds!</p>
+					</div>
+					<!-- End Words Tab -->
+					<div class="tab-pane" id="monkeys">
+						<br><nav>
+						<ul class="nav nav-pills nav-stacked span2">
+							<li><a href="#">Home</a></li>
+							<li><a href="#">About</a></li>
+							<li><a href="#">Contact</a></li>
+						</ul>
+					</div>
+
+					<!-- Start Achievements Tab -->
+					<div class="tab-pane" id="achievements">
+
+						<h1>Achievements</h1><hr>
+						<div id="achievementPlaceholder"></div><br><br>
+
+					</div>
+					<!-- End Achievementts Tab -->
+
+
 				</div>
-				<!-- End Letters Tab -->
-
-				<div class="tab-pane" id="words">
-					<h1>Werds</h1>
-					<p>Fresh werds, get yur werds!</p>
-				</div>
-				<div class="tab-pane" id="monkeys">
-					<h1>Monkeys</h1>
-					<p>Tails not included.</p>
-				</div>
-
-				<!-- Start Achievements Tab -->
-				<div class="tab-pane" id="achievements">
-
-					<h1>Achievements</h1><hr>
-
-					<div id="achievementPlaceholder"></div><br><br>
-
-				</div>
-
-				
-				<!-- End Achievements Tab -->
-
 			</div>
 		</div>
-	</div>
-</body>
+	</body>
 </html>
