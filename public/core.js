@@ -78,15 +78,17 @@ app.controller('MonkeyController', ['$scope', 'ipCookie', 'firstLoad', function(
 		}
 
 		// Pop bannerz
-		for (var i = 0; i < newbies.length; i++) {
-			sc.currentAchievement = newbies[i][0]
-			sc.currentDescription = newbies[i][1]
-			sc.currentPoints = newbies[i][2]
+		if (!firstRun) {		
+			for (var i = 0; i < newbies.length; i++) {
+				sc.currentAchievement = newbies[i][0]
+				sc.currentDescription = newbies[i][1]
+				sc.currentPoints = newbies[i][2]
 
-			$("#achievement-alert").slideDown(500)
-			$("#achievement-alert").fadeTo(5000, 500).slideUp(500, function(){
-				$("#achievement-alert").alert('close');
-			});
+				$("#achievement-alert").slideDown(500)
+				$("#achievement-alert").fadeTo(5000, 500).slideUp(500, function(){
+					$("#achievement-alert").alert('close');
+				});
+			}
 		}
 	}
 
@@ -124,12 +126,13 @@ app.controller('MonkeyController', ['$scope', 'ipCookie', 'firstLoad', function(
 					saveData.achievements.push(false)
 
 				ipCookie("saveData", saveData)
-
 			}
+			else {
+				saveData.achievements = cookie.achievements
+			}
+
 			// Rectify achievement completion count in case new achievements have been added
 			if (saveData.achievements.length != achievements.length) {
-				saveData.achievements = []
-
 				for (var i = saveData.achievements.length; i < achievements.length; i++) {
 					saveData.achievements.push(false)
 				}
@@ -209,7 +212,6 @@ app.controller('MonkeyController', ['$scope', 'ipCookie', 'firstLoad', function(
 
 	console.log('Generating alphabet progress bars')
 
-	var code = ""
 	var max = 0
 
 	for (var i = 0; i < alphabet.length; i++) {
@@ -274,6 +276,8 @@ app.controller('MonkeyController', ['$scope', 'ipCookie', 'firstLoad', function(
 			document.getElementById("progressBarLabel" + i).innerHTML = data[2]
 		}
 	}
+
+	var code = ""
 
 	// Create a progress bar for each letter of the alphabet
 	for (var i = 0; i < alphabet.length; i++) {
