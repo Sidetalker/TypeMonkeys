@@ -1,7 +1,7 @@
 // Initialize save variable
 var saveData = {
 	letterCount: 		0,
-	letterDisplayState: 1,
+	letterDisplayState: 3,
 	letterQuantities: 	[],
 	letterLog:  		[],
 	achievements: 		[]
@@ -142,6 +142,10 @@ app.controller('MonkeyController', ['$scope', 'ipCookie', 'firstLoad', function(
 
 			ipCookie("saveData", saveData)
 
+			if (saveData.letterCount > 0) {
+				$("#instructions-alert").alert('close');
+			}
+
 			console.log(cookie)
 
 			console.log("Save data loaded!")
@@ -151,12 +155,12 @@ app.controller('MonkeyController', ['$scope', 'ipCookie', 'firstLoad', function(
 			console.log("No save data found")
 
 			saveData.letterCount = 0
-			saveData.letterDisplayState = 0
+			saveData.letterDisplayState = 3
 			saveData.letterQuantities = []
 			saveData.achievements = []
 
 			for (var i = 0; i < alphabet.length; i++) 
-				saveData.letterQuantities.push(1000)
+				saveData.letterQuantities.push(0)
 
 			for (var i = 0; i < achievements.length; i++) 
 				saveData.achievements.push(false)
@@ -261,6 +265,12 @@ app.controller('MonkeyController', ['$scope', 'ipCookie', 'firstLoad', function(
 
 	var updateProgressBars = function() {
 		var max = 0
+
+		if (saveData.letterCount == 1) {
+			$("#instructions-alert").fadeTo(0, 500).slideUp(500, function(){
+				$("#instructions-alert").alert('close');
+			});
+		}
 
 		for (var i = 0; i < alphabet.length; i++) {
 			if (saveData.letterQuantities[i] > max) {
@@ -407,7 +417,7 @@ app.controller('MonkeyController', ['$scope', 'ipCookie', 'firstLoad', function(
 
 // Handles the segmented button controller for letter progress bar display
 app.controller('TextToggleController', ['$scope', 'ipCookie', function(sc, ipCookie) {
-	sc.radioModel = 'None';
+	sc.radioModel = 'Both';
 
 	if (ipCookie("saveData")) {
 		switch (ipCookie("saveData").letterDisplayState) {

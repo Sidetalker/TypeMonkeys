@@ -66,9 +66,10 @@
 					<li><a href="#achievements" data-toggle="tab">Ape Points: {{ pointCount() }}</a></li>
 				</ul>
 				<div id="tab-content" class="tab-content">
-					<!-- Achievements: 0 / {{ achievements.length }} -->
 					<!-- Start Letters Tab -->
+
 					<div class="tab-pane active" id="letters">
+
 						<center>
 							<div class="btn-group" ng-controller="TextToggleController" style="padding-top:20px;">
 								<label class="btn btn-default" ng-model="radioModel" ng-click="updateTextDisplay(0)" btn-radio="'None'">None</label>
@@ -77,6 +78,10 @@
 								<label class="btn btn-default" ng-model="radioModel" ng-click="updateTextDisplay(3)" btn-radio="'Both'">Both</label>
 							</div>
 						</center><br>
+						
+						<div class="alert alert-warning alert-dismissable" id="instructions-alert">
+							<center><strong>Start smashing away at that keyboard!</strong></center>
+						</div>
 
 						<div id="progress"></div>
 
