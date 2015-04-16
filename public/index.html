@@ -37,7 +37,8 @@
 			<div class="container">
 				<div class="navbar-header">
 					<a class="navbar-brand" href="http://typemonkeys.sideapps.com">TypeMonkeys</a>
-					<p class="navbar-text">v0.0.5</p>
+					<p class="navbar-text">v0.0.6</p>
+					<p class="navbar-text" style="padding-left:100px">{{ letterLog() }}</p>
 				</div>
 				<div class="navbar-collapse collapse">
 					<ul class="nav navbar-nav navbar-right">
@@ -49,7 +50,7 @@
 		</nav>
 		<!-- End Navigation Bar -->
 
-<div class="alert alert-success" id="achievement-alert">
+<div class="alert alert-success alert-dismissable" id="achievement-alert">
     <strong>{{ currentAchievement }}</strong> - {{ currentDescription }}
     <span class="badge pull-right">{{ currentPoints }} pts</span>
 </div>
