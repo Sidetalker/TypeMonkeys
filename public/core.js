@@ -18,42 +18,6 @@ var identical = function(array) {
     return true;
 }
 
-var updateAchievements = function() {
-	var newbies = []
-
-	// [0] Samesies!---Have the same number of each letter
-	if (!saveData.achievements[0]) {
-		if (identical(saveData.letterQuantities) && saveData.letterQuantities[0] >= 1) {
-			saveData.achievements[0] = true
-			newbies.push(achievements[0])
-		}
-	}
-
-	// Update UI
-	for (var i = 0; i < saveData.achievements.length; i++) {
-		if (saveData.achievements[i]) {
-			var panel = document.getElementById("achievementPanel" + i)
-
-			if (panel) { panel.className = "panel panel-success" }
-		}
-		else {
-			var panel = document.getElementById("achievementPanel" + i)
-
-			if (panel) { panel.className = "panel panel-danger" }
-		}
-	}
-
-	// Pop bannerz
-	for (var i = 0; i < newbies.length; i++) {
-		window.setTimeout(function() {
-			console.log('asf')
-		    $('#myAlert').fadeTo(500, 0).slideUp(500, function(){
-		        $(this).remove(); 
-		    });
-		}, 5000);
-	}
-}
-
 app = angular.module('typeMonkeys', ['timer', 'ui.bootstrap', 'ipCookie'])
 
 // Takes care of retrieving the achievements data when the app is loaded
@@ -69,6 +33,53 @@ app.controller('MonkeyController', ['$scope', 'ipCookie', 'firstLoad', function(
 					'n','o','p','q','r','s','t','u','v','w','x','y','z']
 
 	var cookie = ipCookie("saveData")
+
+	// Hide alerts
+	$("#achievement-alert").hide();
+
+	sc.currentAchievement = ""
+	sc.currentDescription = ""
+	sc.currentPoints = 0
+
+	var updateAchievements = function() {
+		var newbies = []
+
+		// [0] Samesies!---Have the same number of each letter
+		if (!saveData.achievements[0]) {
+			if (identical(saveData.letterQuantities) && saveData.letterQuantities[0] >= 1) {
+				saveData.achievements[0] = true
+				newbies.push(achievements[0])
+			}
+		}
+
+		// Update UI
+		for (var i = 0; i < saveData.achievements.length; i++) {
+			if (saveData.achievements[i]) {
+				var panel = document.getElementById("achievementPanel" + i)
+
+				console.log(panel)
+
+				if (panel) { panel.className = "panel panel-success" }
+			}
+			else {
+				var panel = document.getElementById("achievementPanel" + i)
+
+				if (panel) { panel.className = "panel panel-danger" }
+			}
+		}
+
+		// Pop bannerz
+		for (var i = 0; i < newbies.length; i++) {
+			sc.currentAchievement = newbies[i][0]
+			sc.currentDescription = newbies[i][1]
+			sc.currentPoints = newbies[i][2]
+
+			$("#achievement-alert").slideDown(500)
+			$("#achievement-alert").fadeTo(5000, 500).slideUp(500, function(){
+				$("#achievement-alert").alert('close');
+			});
+		}
+	}
 
 	firstLoad.success(function(data) {
 		// Load achievements from file
