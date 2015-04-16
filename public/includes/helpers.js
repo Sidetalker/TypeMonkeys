@@ -10,3 +10,13 @@ $(function(){
 		$('html,body').scrollTop(scrollmem);
 	});
 });
+
+// Extension to check if two arrays are identical
+Array.prototype.same = function() {
+    for(var i = 1; i < this.length; i++) {
+        if(this[i] !== this[0])
+            return false;
+    }
+
+    return true;
+}
