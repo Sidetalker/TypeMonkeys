@@ -3,6 +3,14 @@
 * New feature earn <something> every X **active** minutes with X% chance
 
 # Changelog
+<<<<<<< HEAD
+=======
+## v0.0.5 / 04-16-15
+
+* Achievements fully implemented
+* Temporary cookie fix for l-sizzle
+
+>>>>>>> release/v0.0.6
 ## v0.0.4 / 04-15-15
 
 * Fixed broken build
