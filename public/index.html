@@ -37,7 +37,7 @@
 			<div class="container">
 				<div class="navbar-header">
 					<a class="navbar-brand" href="http://typemonkeys.sideapps.com">TypeMonkeys</a>
-					<p class="navbar-text">v0.0.4</p>
+					<p class="navbar-text">v0.0.5</p>
 				</div>
 				<div class="navbar-collapse collapse">
 					<ul class="nav navbar-nav navbar-right">
@@ -49,16 +49,21 @@
 		</nav>
 		<!-- End Navigation Bar -->
 
+<div class="alert alert-success" id="achievement-alert">
+    <strong>{{ currentAchievement }}</strong> - {{ currentDescription }}
+    <span class="badge pull-right">{{ currentPoints }} pts</span>
+</div>
+
 		<!-- Start Page Tab Controller -->
 		<div id="content" style="padding-top:20px;">
 			<ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
 				<li class="active"><a href="#letters" data-toggle="tab">Letters: {{ letterCount }}</a></li>
 				<li><a href="#words" data-toggle="tab">Words: 0</a></li>
 				<li><a href="#monkeys" data-toggle="tab">Monkeys: 0</a></li>
-				<li><a href="#achievements" data-toggle="tab">Achievements: 0 / {{ achievements.length }}</a></li>
+				<li><a href="#achievements" data-toggle="tab">Ape Points: {{ pointCount() }}</a></li>
 			</ul>
 			<div id="tab-content" class="tab-content">
-
+<!-- Achievements: 0 / {{ achievements.length }} -->
 				<!-- Start Letters Tab -->
 				<div class="tab-pane active" id="letters">
 					<center>
