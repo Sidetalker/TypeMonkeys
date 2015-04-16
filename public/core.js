@@ -3,6 +3,7 @@ var saveData = {
 	letterCount: 		0,
 	letterDisplayState: 1,
 	letterQuantities: 	[],
+	letterLog:  		[],
 	achievements: 		[]
 }
 
@@ -41,10 +42,10 @@ app.controller('MonkeyController', ['$scope', 'ipCookie', 'firstLoad', function(
 	sc.currentDescription = ""
 	sc.currentPoints = 0
 
-	var updateAchievements = function() {
+	var updateAchievements = function(firstRun) {
 		var newbies = []
 
-		// [0] Samesies!---Have the same number of each letter
+		// [0] No monkeyin' around---Have the same number of each letter---5
 		if (!saveData.achievements[0]) {
 			if (identical(saveData.letterQuantities) && saveData.letterQuantities[0] >= 1) {
 				saveData.achievements[0] = true
@@ -52,12 +53,20 @@ app.controller('MonkeyController', ['$scope', 'ipCookie', 'firstLoad', function(
 			}
 		}
 
+		// [1] Happy Birthday!---Refresh the page at 11:11---5
+		if (!saveData.achievements[1] && firstRun) {
+			var date = new Date()
+
+			if (date.getHours() == 11 && date.getMinutes() == 11) {
+				saveData.achievements[1] = true
+				newbies.push(achievements[1])
+			}
+		}
+
 		// Update UI
 		for (var i = 0; i < saveData.achievements.length; i++) {
 			if (saveData.achievements[i]) {
 				var panel = document.getElementById("achievementPanel" + i)
-
-				console.log(panel)
 
 				if (panel) { panel.className = "panel panel-success" }
 			}
@@ -103,6 +112,10 @@ app.controller('MonkeyController', ['$scope', 'ipCookie', 'firstLoad', function(
 			saveData.letterDisplayState = cookie.letterDisplayState
 			saveData.letterQuantities = cookie.letterQuantities.slice(0,26)
 
+			if (cookie.letterLog) {
+				saveData.letterLog = cookie.letterLog.slice(0,50)
+			}
+
 			// Check for achievements variable
 			if (!cookie.achievements) {
 				saveData.achievements = []
@@ -147,7 +160,7 @@ app.controller('MonkeyController', ['$scope', 'ipCookie', 'firstLoad', function(
 
 			ipCookie("saveData", saveData)
 
-			updateAchievements()
+			updateAchievements(true)
 		}
 
 		// Generate Achievements HTML
@@ -180,7 +193,7 @@ app.controller('MonkeyController', ['$scope', 'ipCookie', 'firstLoad', function(
 		achievementsElement = document.getElementById("achievementPlaceholder")
 		achievementsElement.innerHTML = code
 
-		updateAchievements()
+		updateAchievements(true)
 
 		// Assign scope variables to their corresponding cookie values
 		sc.letterCount = 0
@@ -317,7 +330,7 @@ app.controller('MonkeyController', ['$scope', 'ipCookie', 'firstLoad', function(
 	updateProgressBars()
 	code = ""
 
-	updateAchievements()
+	updateAchievements(false)
 
 	sc.pointCount = function() {
 		var count = 0
@@ -328,9 +341,11 @@ app.controller('MonkeyController', ['$scope', 'ipCookie', 'firstLoad', function(
 			}
 		}
 
-		console.log(count)
-
 		return count
+	}
+
+	sc.letterLog = function() {
+		return saveData.letterLog.join(" ")
 	}
 
 	sc.save = function() {
@@ -363,8 +378,13 @@ app.controller('MonkeyController', ['$scope', 'ipCookie', 'firstLoad', function(
 			saveData.letterCount++
 			sc.letterCount++
 
+			if (saveData.letterLog.length == 50) 
+				saveData.letterLog = saveData.letterLog.slice(1,50)
+
+			saveData.letterLog.push(alphabet[event.charCode - 97])
+
 			updateProgressBars()
-			updateAchievements()
+			updateAchievements(false)
 		}
 	}
 
