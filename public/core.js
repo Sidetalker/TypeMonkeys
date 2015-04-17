@@ -4,7 +4,8 @@ var saveData = {
 	letterDisplayState: 3,
 	letterQuantities: 	[],
 	letterLog:  		[],
-	achievements: 		[]
+	achievements: 		[],
+	tabs: 				[]
 }
 
 var achievements = []
@@ -47,7 +48,7 @@ app.controller('MonkeyController', ['$scope', 'ipCookie', 'firstLoad', function(
 
 		// [0] No monkeyin' around---Have the same number of each letter---5
 		if (!saveData.achievements[0]) {
-			if (identical(saveData.letterQuantities) && saveData.letterQuantities[0] >= 1) {
+			if (identical(saveData.letterQuantities) && saveData.letterQuantities[0] >= 1000) {
 				saveData.achievements[0] = true
 				newbies.push(achievements[0])
 			}
@@ -158,12 +159,16 @@ app.controller('MonkeyController', ['$scope', 'ipCookie', 'firstLoad', function(
 			saveData.letterDisplayState = 3
 			saveData.letterQuantities = []
 			saveData.achievements = []
+			saveData.tabs = [[true, true]]
 
-			for (var i = 0; i < alphabet.length; i++) 
+			for (var i = 1; i < alphabet.length; i++) 
 				saveData.letterQuantities.push(0)
 
 			for (var i = 0; i < achievements.length; i++) 
 				saveData.achievements.push(false)
+
+			for (var i = 0; i < 3; i++) 
+				saveData.tabs.push([false, true])
 
 			ipCookie("saveData", saveData)
 
@@ -346,7 +351,24 @@ app.controller('MonkeyController', ['$scope', 'ipCookie', 'firstLoad', function(
 
 	updateAchievements(false)
 
-	sc.pointCount = function() {
+	sc.monkeyTab = function() {
+		if (!saveData.tabs[2]) { return }
+		if (!saveData.tabs[2][0]) { return '' }
+
+		return 'Monkeys: 0' + '<span class="badge pull-right"><span class="glyphicon glyphicon-exclamation-sign"></span>'
+	}
+
+	sc.wordsTab = function() {
+		if (!saveData.tabs[1]) { return }
+		if (!saveData.tabs[1][0]) { return '' }
+
+		return 'Words: 0'
+	}
+
+	sc.achievementTab = function() {
+		if (!saveData.tabs[3]) { return }
+		if (!saveData.tabs[3][0]) { return '' }
+
 		var count = 0
 
 		for (var i = 0; i < achievements.length; i++) {
@@ -355,7 +377,7 @@ app.controller('MonkeyController', ['$scope', 'ipCookie', 'firstLoad', function(
 			}
 		}
 
-		return count
+		return 'Ape Points: ' + count.toString()
 	}
 
 	sc.letterLog = function() {
@@ -394,8 +416,12 @@ app.controller('MonkeyController', ['$scope', 'ipCookie', 'firstLoad', function(
 
 			if (saveData.letterLog.length == 50) 
 				saveData.letterLog = saveData.letterLog.slice(1,50)
+			
+			if (saveData.letterCount == 10) 
+				saveData.tabs[1][0] = true
 
 			saveData.letterLog.push(alphabet[event.charCode - 97])
+
 
 			updateProgressBars()
 			updateAchievements(false)
